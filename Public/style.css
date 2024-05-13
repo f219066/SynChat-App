@@ -1,0 +1,363 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #121212; /* Dark background */
+    color: #FFFFFF; /* Light text */
+    background-size: cover; /* or 100% 100% */
+}
+
+body.dark-theme {
+    background-color: #FFFFFF; /* Light background */
+    color: #121212; /* Dark text */
+}
+
+body.dark-theme .chat-container,
+body.dark-theme .contact-list,
+body.dark-theme .chat-area,
+body.dark-theme .chat-input {
+    background-color: #FFFFFF; /* Light background */
+    color: #121212; /* Dark text */
+}
+
+@keyframes zoom {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+h1 {
+    animation: zoom 2s infinite;
+    color: #FFFFFF; /* Light text */
+}
+
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+    background-image: url('Icons/wp2991639.webp');
+    background-size: cover; 
+    background-position: center; 
+}
+
+.notification {
+    display: none; /* Initially hide the notification */
+    position: absolute; /* Position it absolutely within its parent */
+    right: 20px; /* Position it 20px from the right edge of its parent */
+    top: 20px; /* Position it 20px from the top edge of its parent */
+    /* Add other styles as needed (background color, padding, etc.) */
+}
+
+
+.welcome-container h1 {
+    margin-bottom: 30%; /* Reduced from 50% to 30% */
+    color: #FFFFFF; /* Light text */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+.welcome-container button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #FFFFFF; /* Light background */
+    color: #121212; /* Dark text */
+}
+
+#login-container.hidden {
+    display: none;
+}
+
+#login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+        text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #4caf50; /* Green background color */
+    color: #000; /* Black text color */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999; /* Ensure it's above other content */
+}
+
+#login-container h2 {
+    margin-bottom: 20px;
+    
+}
+
+#userInput {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#loginButton {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#loginButton:hover {
+    background-color: #0056b3;
+}
+
+.green-dot {
+    height: 10px;
+    width: 10px;
+    background-color: #00C851;
+    border-radius: 50%;
+    display: inline-block;
+}
+#onlineUsersShow {
+   
+    display: flex;
+    flex-direction: column;/* Users will appear on new lines */
+}
+
+/* styles.css */
+
+#video {
+    display: none;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid #ccc;
+}
+
+#captureButton {
+    display: none;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+
+#logo {
+    height: 90px; /* Adjust as needed */
+    width: 90px; /* Adjust as needed */
+}
+
+#addChatButton {
+    background-color: #25D366; /* Green background */
+    color: #121212; /* Dark text */
+}
+
+#addChatButton:hover {
+    background-color: #128C7E; /* Darker green on hover */
+}
+
+.chat-container {
+    display: flex;
+    height: 100vh;
+}
+
+.contact-list {
+    width: 250px;
+    border-right: 1px solid #333; /* Darker border */
+    overflow-y: auto;
+    background-color: #121212; /* Dark background */
+    color: #FFFFFF; /* Light text */
+    backdrop-filter: blur(5px);
+}
+
+.contact {
+    padding: 15px;
+    border-bottom: 1px solid #333; /* Darker border */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 10px; 
+    flex-direction: column;
+}
+
+.contact i {
+    margin-right: 10px;
+}
+
+.contact:hover {
+    background-color: #333; /* Darker hover */
+}
+
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #101612; /* Updated to green background */
+    color: #FFFFFF; /* Light text */
+    background-image: url('Icons/chatpic.jpg');
+    background-size: cover; 
+    background-position: center; 
+}
+
+
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.chat-input {
+    padding: 20px;
+    background-color: #333; /* Darker input area */
+    border-top: 1px solid #333; /* Darker border */
+    display: flex;
+    align-items: center;
+    
+}
+
+.chat-input button {
+    background-color: #25D366; /* Green send button */
+    color: #FFFFFF; /* Light text */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    outline: none;
+    margin-left: 10px;
+    width: 40px; /* Set width */
+    height: 40px; /* Set height */
+    border-radius: 50%; /* Make it round */
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    width: 250px; /* Adjust the width as needed */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000; /* Ensure it's on top */
+    overflow: auto; /* Add scroll if content is too long */
+}
+
+
+.dropdown-content .contact {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.chat-input button:hover {
+    background-color: #128C7E; /* Darker green on hover */
+}
+
+.chat-title {
+    text-align: center;
+    font-weight: bold; /* Make the text bold */
+    color: #008000; /* Change the color to a shady green */
+    font-size: 40px; /* Increase the font size */
+    text-shadow: 2px 2px 4px #000000; /* Add a subtle shadow for depth */
+}
+
+
+.chat-input input[type="text"] {
+    flex-grow: 1;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #FFFFFF; /* Light input field */
+    color: #121212; /* Dark text */
+    margin-right: 10px;
+}
+
+.message-container {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.message-container .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.message-container .message {
+    background-color: #333; /* Darker message background */
+    padding: 12px 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    word-wrap: break-word;
+    margin-left: auto; /* Align to the left */
+    margin-right: 0; /* Push to the opposite side of self messages */
+}
+
+.message-container .message.self {
+    background-color: #25D366; /* Green self message */
+    color: #FFFFFF; /* Light text */
+    align-self: flex-end;
+    margin-left: 0; /* Align to the right */
+    margin-right: auto; /* Keep on the right side */
+}
+
+
+.message-container .message.self .message-content {
+    color: #FFFFFF; /* Light text */
+}
+
+.message-container .message.self .message-meta {
+    color: rgba(255, 255, 255, 0.8); /* Lighter text */
+}
+
+.message-container .message .message-content {
+    margin-bottom: 5px;
+}
+
+.message-container .message .message-meta {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5); /* Lighter text */
+}
+
+
+footer {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    padding: 10px;
+}
+  
+footer p {
+    font-weight: bold;
+}
+
+.file-drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    margin: 10px 0;
+    color: #999;
+    cursor: pointer;
+    display: none; /* Initially hidden */
+}
+
+.file-drop-area:hover {
+    border-color: #666;
+    color: #666;
+}

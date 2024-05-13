@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to SynChat</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="icon" type="png" href="/Public/Icons/scl.png" sizes="60x60">
+    <link rel="icon" type="image/png" href="/Public/Icons/favicon.png">
+    
+</head>
+<body>
+    <div id="login-container" style="display: none;"> 
+        <h2>Profile Name</h2>
+        <input type="text" id="userInput" placeholder="Enter your name">
+        <button id="loginButton" class="btn btn-primary">Start</button>
+    </div>
+
+    <div class="welcome-container">
+        <h1>Welcome to SynChat <img src="Icons/scl.png" alt="Syncchatlogos" id="logo"></h1>
+        <button id="addChatButton" class="btn btn-primary">+</button>
+    </div>
+
+    <div class="chat-container" style="display: none;">
+        <div class="contact-list">
+            
+            <div class="contact" id="chatsButton">
+                <i><img src="Icons/icons8-chats-16.png" alt="icon"></i>Chats
+                <div id="dropdownContent" class="dropdown-content"></div>
+            </div>
+            
+            <div class="contact" id="Status">
+                <i><img src="Icons/icons8-status-16.png" alt="icon"></i>Online Users
+                <div id="onlineUsersShow"></div>
+            </div>
+                   
+            <div class="contact"><i><img src="Icons/icons8-male-user-16.png" alt="icon"></i>Profile</div>
+          
+            <div class="contact" id="refreshButton"><i><img src="Icons/icons8-refresh-30.png" alt="icon"></i>Refresh</div>
+        </div>
+        
+
+        <div class="chat-area">
+            
+            <h2 class="chat-title"></h2>
+            <div class="chat-messages" id="chatMessages">
+            </div>
+
+            <div class="chat-input">
+
+                <input type="file" id="fileInput" style="display: none;">
+    <!-- Add this inside your chat-input div -->
+<div id="fileDropArea" class="file-drop-area">
+    Drag and drop a file here or click to select a file
+</div>
+
+    <button id="fileButton" class="btn btn-primary"><i class="fas fa-file"></i></button>
+                <button id="cameraButton" class="btn btn-primary"><i class="fas fa-camera"></i> </button>
+                <button id="voiceButton" class="btn btn-primary"><i class="fas fa-microphone"></i> </button>
+                <input type="text" id="messageInput" class="form-control" placeholder="Type a message...">
+                <button id="sendButton" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <video id="video" style="display: none;"></video>
+<button id="captureButton" style="display: none;">Capture</button>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script>
+        var socket = io();
+        var activeUser = null;
+        var messageInput = document.getElementById('messageInput');
+
+messageInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevents the default action
+        document.getElementById('sendButton').click(); // Triggers the click event on your send button
+    }
+});
+        document.getElementById('addChatButton').addEventListener('click', function() {
+            document.querySelector('.welcome-container').style.display = 'none';
+            document.getElementById('login-container').style.display = 'block'; // Show the login container when '+' is clicked
+        });
+        
+        document.getElementById('loginButton').addEventListener('click', function() {
+            activeUser = document.getElementById('userInput').value;
+            if (activeUser) {
+                localStorage.setItem(activeUser, true);
+                document.getElementById('login-container').style.display = 'none';
+                document.querySelector('.chat-container').style.display = 'flex';
+                socket.emit('userLoggedIn', activeUser); // Emit an event to the server when a user logs in
+                socket.emit('getActiveUsersForStatus'); 
+            }
+        });
+
+        document.getElementById('refreshButton').addEventListener('click', function() {
+    socket.emit('getActiveUsers'); // Request the list of active users from the server
+    socket.emit('getActiveUsersForStatus'); 
+});
+
+document.getElementById('chatsButton').addEventListener('click', function(event) {
+    var dropdownContent = document.getElementById('dropdownContent');
+    var rect = event.target.getBoundingClientRect();
+    var top = rect.bottom + window.scrollY;
+    var left = rect.left + window.scrollX;
+    dropdownContent.style.top = top + 'px';
+    dropdownContent.style.left = left + 'px';
+
+    if (dropdownContent.style.display === 'none') {
+        dropdownContent.style.display = 'block';
+        socket.emit('getActiveUsers');
+    } else {
+        dropdownContent.style.display = 'none';
+    }
+});
+
+        
+socket.on('activeUsers', function(users) {
+    var dropdownContent = document.getElementById('dropdownContent');
+    dropdownContent.innerHTML = '';
+    for (var i = 0; i < users.length; i++) {
+        var userName = users[i];
+        var displayName = (userName === activeUser) ? 'You' : userName; // If the user is the active user, display 'You'
+        dropdownContent.innerHTML += `
+            <div class="contact" data-id="${userName}">
+                <img src="Icons/icons8-dot-48.png" alt="icon">
+                ${displayName}
+            </div>`;
+    }
+});
+
+socket.on('updateStatus', function(users) {
+    console.log('Received updateStatus event with users:', users); // Add this line
+    var onlineUsersShowDiv = document.getElementById('onlineUsersShow');
+    onlineUsersShowDiv.innerHTML = '';
+    users.forEach(function(user) {
+        onlineUsersShowDiv.innerHTML += `<div><span class="green-dot"></span> ${user}</div>`;
+    });
+});
+    
+        document.querySelector('.contact-list').addEventListener('click', function(e) {
+            if (e.target.classList.contains('contact')) {
+                var userName = e.target.dataset.id;
+                startChat(userName);
+            }
+        });
+        
+        function startChat(userName) {
+    var chatTitle = document.querySelector('.chat-title');
+    var chatMessages = document.getElementById('chatMessages');
+    chatTitle.textContent = userName;
+    chatMessages.innerHTML = '<div class="encryption-notice" style="color: yellow; text-align: center; font-size: small;">Messages you send to this chat are now end-to-end encrypted</div>';
+    document.querySelector('.welcome-container').style.display = 'none';
+    document.querySelector('.chat-container').style.display = 'flex';
+}
+
+document.getElementById('sendButton').addEventListener('click', function() {
+    var messageInput = document.getElementById('messageInput');
+    var chatMessages = document.getElementById('chatMessages');
+    var message = messageInput.value.trim();
+    var recipient = document.querySelector('.chat-title').textContent; // Get the recipient's username from the chat title
+
+    // Check if a file is selected
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
+
+    if (file) {
+        // If a file is selected, send the file
+        sendFile(file);
+    } else if (message) {
+        // If no file is selected but a message is typed, send the message
+        chatMessages.innerHTML += `
+            <div class="message-container">
+                <div class="avatar"></div>
+                <div class="message self">
+                    <div class="message-content">${message}</div>
+                    <div class="message-meta">Just now</div>
+                </div>
+            </div>`;
+        messageInput.value = '';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        socket.emit('message', {user: activeUser, text: message, recipient: recipient}); // Include the recipient when emitting the 'message' event
+    }
+});
+
+
+
+socket.on('message', function(message) {
+    if (message) {
+        var chatMessages = document.getElementById('chatMessages');
+        var chatTitle = document.querySelector('.chat-title').textContent;
+        if (message.user === activeUser || message.user === chatTitle) {
+            // Existing behavior: append the message to the chat
+            var messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container';
+            var avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            var messageDiv = document.createElement('div');
+            messageDiv.className = message.user === activeUser ? 'message self' : 'message';
+            var messageContent = document.createElement('div');
+            messageContent.className = 'message-content';
+            messageContent.textContent = message.user === activeUser ? message.text : message.user + ': ' + message.text;
+            var messageMeta = document.createElement('div');
+            messageMeta.className = 'message-meta';
+            messageMeta.textContent = 'Just now';
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(messageMeta);
+            messageContainer.appendChild(avatar);
+            messageContainer.appendChild(messageDiv);
+            chatMessages.appendChild(messageContainer);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        } else {
+            // New behavior: show a notification instead of the message
+            var notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = 'New message from ' + message.user;
+            chatMessages.appendChild(notification);
+        }
+    }
+});
+        document.getElementById('cameraButton').addEventListener('click', function() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            var video = document.getElementById('video');
+            video.srcObject = stream;
+            video.play();
+
+            // Show the video and capture button
+            video.style.display = 'block';
+            document.getElementById('captureButton').style.display = 'block';
+        })
+        .catch(function(err) {
+            console.log('An error occurred: ' + err);
+        });
+});
+
+document.getElementById('captureButton').addEventListener('click', function() {
+    var video = document.getElementById('video');
+    var canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;    
+    var context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    var imageUrl = canvas.toDataURL();
+    socket.emit('image', { user: activeUser, imageUrl: imageUrl });
+    // Stop the video stream
+    video.srcObject.getTracks().forEach(track => track.stop());
+
+    // Hide the video and capture button
+    video.style.display = 'none';
+    document.getElementById('captureButton').style.display = 'none';
+});
+
+// Listen for 'image' events from the server
+
+socket.on('image', function(data) {
+    var chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML += `
+        <div class="message-container">
+            <div class="avatar"></div>
+            <div class="message">
+                <div class="message-content"><img src="${data.imageUrl}" alt="User image" style="max-width: 100%; height: auto;"></div>
+                <div class="message-meta">Just now</div>
+            </div>
+        </div>`;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+
+
+
+
+
+// When the voice button is clicked
+voiceButton.addEventListener('click', function() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        // If it's currently recording, stop it
+        mediaRecorder.stop();
+        voiceButton.textContent = 'Record';
+    } else {
+        // Request access to the microphone
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function(stream) {
+                // Create a new MediaRecorder instance
+                mediaRecorder = new MediaRecorder(stream);
+
+                // Start recording
+                mediaRecorder.start();
+
+                // Change the button text to 'Stop'
+                voiceButton.textContent = 'Stop';
+
+                // When data is available after the recorder is stopped
+                mediaRecorder.addEventListener('dataavailable', function(e) {
+                    // The audio data is in e.data
+                    // Convert it to a base64 string
+                    var reader = new FileReader();
+                    
+                    reader.onloadend = function() {
+                        var base64String = reader.result;
+                        socket.emit('voice', { user: activeUser, voice: base64String });
+
+                        // Create an audio element to play the voice message
+                        var audio = document.createElement('audio');
+                        audio.src = base64String;
+                        audio.controls = true;
+
+                        // Add the audio element to the chat
+                        document.getElementById('chatMessages').appendChild(audio);
+                    };
+                    reader.readAsDataURL(e.data);
+                });
+            })
+            .catch(function(err) {
+                console.log('An error occurred: ' + err);
+            });
+    }
+});
+
+// Listen for 'voice' events from the server
+socket.on('voice', function(data) {
+    // The voice data is in data.voice
+    // Convert it back to a Blob and play it
+    var audio = document.createElement('audio');
+    audio.src = data.voice;
+    audio.controls = true;
+
+    // Add the audio element to the chat
+    document.getElementById('chatMessages').appendChild(audio);
+});
+
+socket.on('file', function(data) {
+    var chatMessages = document.getElementById('chatMessages');
+    if (data.user === activeUser || data.recipient === activeUser) {
+        // Create a new message element for the file
+        var messageElement = document.createElement('div');
+        messageElement.className = 'message-container';
+        messageElement.innerHTML = `
+            <div class="avatar"></div>
+            <div class="message ${data.user === activeUser ? 'self' : ''}">
+                <div class="message-content">
+                    <a href="${data.file}" download="${data.filename}">${data.filename}</a>
+                </div>
+                <div class="message-meta">Just now</div>
+            </div>
+        `;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});
+
+
+
+
+
+
+
+document.getElementById('fileButton').addEventListener('click', function() {
+    document.getElementById('fileDropArea').style.display = 'block';
+});
+
+document.getElementById('fileDropArea').addEventListener('click', function() {
+    document.getElementById('fileInput').click();
+});
+
+document.getElementById('fileInput').addEventListener('change', function() {
+    const fileDropArea = document.getElementById('fileDropArea');
+    const file = this.files[0];
+    if (file) {
+        fileDropArea.textContent = `Selected file: ${file.name}`;
+        sendFile(file);
+    } else {
+        fileDropArea.textContent = 'No file selected';
+    }
+});
+
+
+// Add an event listener for file drop
+document.getElementById('fileDropArea').addEventListener('drop', function(event) {
+    event.preventDefault();
+    if (event.dataTransfer.items) {
+        for (var i = 0; i < event.dataTransfer.items.length; i++) {
+            if (event.dataTransfer.items[i].kind === 'file') {
+                var file = event.dataTransfer.items[i].getAsFile();
+                sendFile(file);
+            }
+        }
+    }
+});
+
+// Prevent default drag behaviors
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    document.getElementById('fileDropArea').addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults (e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+function sendFile(file) {
+    const fileInput = document.getElementById('fileInput');
+
+    // If no file is provided as a parameter, get the file from the file input
+    if (!file && fileInput.files.length > 0) {
+        file = fileInput.files[0];
+    }
+
+    // Only proceedssssssssss if a file is selected/provided
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const fileData = event.target.result;
+            socket.emit('file', {user: activeUser, file: fileData, filename: file.name, recipient: document.querySelector('.chat-title').textContent});
+        };
+        reader.readAsDataURL(file);
+    } else {
+        console.error('No file selected or provided');
+    }
+}
+
+
+
+function displayMessage(message, type) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageElement = document.createElement('div');
+    messageElement.textContent = message;
+    messageElement.className = type; // 'sent' or 'received'
+    chatMessages.appendChild(messageElement);
+}
+
+
+
+        </script>
+        
+    
+<footer>
+    <p>Developed by QHA</p>
+  </footer>
+</body>
+</html>
