@@ -4,15 +4,15 @@
 (USER-INTERFACE)
 ![Screenshot 2024-05-12 183700](https://github.com/f219066/SynChat-App/assets/152991545/7a45ec08-ee88-4443-981b-f85813671248)
 
+
 (CHATTING EXPERIENCE)
+![image](https://github.com/f219066/SynChat-App/assets/152991545/deaaf95e-bfc5-41ce-accf-611f78d6ffe0)
+
+(FILE SHARING)
 ![image](https://github.com/f219066/SynChat-App/assets/152991545/2367c4f8-9567-4cdd-981a-b44ac852dff2)
 
 
-
-![image](https://github.com/f219066/SynChat-App/assets/152991545/deaaf95e-bfc5-41ce-accf-611f78d6ffe0)
-
-
-
+(PICTURE SHARING)
 ![Screenshot 2024-05-12 185115](https://github.com/f219066/SynChat-App/assets/152991545/baad6295-b132-45b5-86be-5ffb030610c9)
 
 
