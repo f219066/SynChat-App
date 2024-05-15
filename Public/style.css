@@ -9,6 +9,8 @@ body {
     background-size: cover; /* or 100% 100% */
 }
 
+
+
 body.dark-theme {
     background-color: #FFFFFF; /* Light background */
     color: #121212; /* Dark text */
@@ -40,9 +42,11 @@ h1 {
     align-items: center;
     height: 100vh;
     text-align: center;
-    background-image: url('Icons/wp2991639.webp');
+    background-image: url('Icons/ok.png');
     background-size: cover; 
     background-position: center; 
+
+    
 }
 
 .notification {
