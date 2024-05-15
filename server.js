@@ -5,7 +5,7 @@ var io = require('socket.io')(server);
 const socketIds = {};
 app.use(express.static('public'));
 
-var users = {}; // To store the socket ID of each user
+var users = {}; // To store the socket ID of each user ok
 
 io.on('connection', function(socket) {
 
